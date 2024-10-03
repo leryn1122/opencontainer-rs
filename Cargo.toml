@@ -1,0 +1,22 @@
+[workspace]
+resolver = "2"
+members = [
+  "crates/libcni",
+  "crates/libcri",
+  "crates/liboci",
+  "crates/support"
+]
+
+[workspace.dependencies]
+
+[workspace.dependencies.libcni]
+path = "crates/libcni"
+
+[workspace.dependencies.libcri]
+path = "crates/libcri"
+
+[workspace.dependencies.liboci]
+path = "crates/liboci"
+
+[workspace.dependencies.support]
+path = "crates/support"

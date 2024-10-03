@@ -1,0 +1,16 @@
+[package]
+name = "support"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dependencies.serde]
+version = "1.0.210"
+features = [ "derive" ]
+
+[dependencies.serde_json]
+version = "1.0.128"
+
+[dependencies.semver]
+version = "1.0.20"
