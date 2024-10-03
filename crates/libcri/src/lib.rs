@@ -1,14 +1,12 @@
-pub fn add(left: u64, right: u64) -> u64 {
-  left + right
+//! # Kubernetes CRI
+//! Reference:
+//! - [v1.proto](https://github.com/kubernetes/cri-api/blob/c75ef5b/pkg/apis/runtime/v1/api.proto)
+//! - [v1alpha2.proto](https://github.com/kubernetes/cri-api/blob/c75ef5b/pkg/apis/runtime/v1alpha2/api.proto)
+
+pub mod v1 {
+  tonic::include_proto!("runtime.v1");
 }
 
-#[cfg(test)]
-mod tests {
-  use super::*;
-
-  #[test]
-  fn it_works() {
-    let result = add(2, 2);
-    assert_eq!(result, 4);
-  }
+pub mod v1alpha2 {
+  tonic::include_proto!("runtime.v1alpha2");
 }
