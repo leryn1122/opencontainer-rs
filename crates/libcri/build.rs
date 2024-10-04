@@ -1,6 +1,3 @@
-//!
-//! [Manual for `tonic-build`](https://github.com/hyperium/tonic/tree/master/tonic-build)
-
 fn main() -> Result<(), Box<dyn std::error::Error>> {
   tonic_build::configure()
     .build_server(true)
