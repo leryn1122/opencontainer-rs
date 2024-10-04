@@ -1,0 +1,25 @@
+[package]
+name = "libcsi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dependencies.prost]
+version = "0.13.3"
+
+[dependencies.prost-types]
+version = "0.13.3"
+
+[dependencies.tonic]
+version = "0.12.3"
+
+[build-dependencies]
+
+[build-dependencies.prost-build]
+version = "0.13.3"
+
+[build-dependencies.tonic-build]
+version = "0.12.3"
+default-features = false
+features = [ "prost", "transport" ]

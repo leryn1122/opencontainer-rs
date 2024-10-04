@@ -3,6 +3,7 @@ resolver = "2"
 members = [
   "crates/libcni",
   "crates/libcri",
+  "crates/libcsi",
   "crates/liboci",
   "crates/support"
 ]
@@ -14,6 +15,9 @@ path = "crates/libcni"
 
 [workspace.dependencies.libcri]
 path = "crates/libcri"
+
+[workspace.dependencies.libcsi]
+path = "crates/libcsi"
 
 [workspace.dependencies.liboci]
 path = "crates/liboci"
