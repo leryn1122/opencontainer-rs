@@ -4,6 +4,11 @@
 use std::collections::HashMap;
 use std::str::FromStr;
 
+use crate::schema::config::CniNetworkConfig;
+use crate::schema::ContainerID;
+use crate::schema::IfName;
+use crate::schema::NetNS;
+
 /// `CNI_COMMAND`: indicates the desired operation; `ADD`, `DEL`, `CHECK`, `GC`, or `VERSION`.
 pub const CNI_COMMAND: &str = "CNI_COMMAND";
 /// Container ID. A unique plaintext identifier for a container, allocated by the runtime.
@@ -40,4 +45,37 @@ impl From<CniArgs> for HashMap<String, String> {
   fn from(value: CniArgs) -> Self {
     value.args
   }
+}
+
+pub struct CniAddContext {
+  pub container_id: ContainerID,
+  pub netns:        NetNS,
+  pub if_name:      IfName,
+  pub config:       CniNetworkConfig,
+  pub args:         CniArgs,
+  // path:         Vec<PathBuf>,
+}
+
+pub struct CniDelContext {
+  pub container_id: ContainerID,
+  pub if_name:      IfName,
+  pub netns:        Option<NetNS>,
+  pub config:       CniNetworkConfig,
+  pub args:         CniArgs,
+  // path:         Vec<PathBuf>,
+}
+
+pub struct CniCheckContext {
+  pub container_id: ContainerID,
+  pub netns:        NetNS,
+  pub if_name:      IfName,
+  pub config:       CniNetworkConfig,
+  pub args:         CniArgs,
+  // path:         Vec<PathBuf>,
+}
+
+pub struct CniStatusArgs {}
+
+pub struct CniGcContext {
+  // path: CniPath,
 }

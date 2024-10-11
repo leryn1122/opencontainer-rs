@@ -5,7 +5,7 @@ use crate::schema::NetNS;
 
 pub struct RuntimeConfig {
   pub container_id: ContainerID,
-  pub net_ns:       NetNS,
+  pub netns:        NetNS,
   pub if_name:      IfName,
   pub args:         CniArgs,
 }

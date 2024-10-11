@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use semver::Version;
 use serde::Deserialize;
 use serde::Serialize;
 use serde_json::Value;
@@ -19,14 +18,14 @@ pub struct CniNetworkConfig {
     deserialize_with = "deserialize_version",
     serialize_with = "serialize_version"
   )]
-  pub cni_version: Version,
+  pub cni_version: semver::Version,
   #[serde(rename = "type")]
   #[serde(
     deserialize_with = "deserialize_versions",
     serialize_with = "serialize_versions"
   )]
   /// List of all CNI versions which this configuration supports.
-  pub cni_versions: Vec<Version>,
+  pub cni_versions: Vec<semver::Version>,
   /// Network name. This should be unique across all network configurations on a host
   /// (or other administrative domain).
   pub name: String,

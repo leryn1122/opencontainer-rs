@@ -1,3 +1,5 @@
+#![feature(io_error_more)]
+
 pub mod api;
 pub mod schema;
 
@@ -20,7 +22,7 @@ use sha2::Digest;
 use sha2::Sha512;
 
 fn main() {
-  run().unwrap_or_else(|e| eprintln!("{}", e));
+  run().unwrap_or_else(|e| eprintln!("{:?}", e));
 }
 
 fn run() -> CniResult<()> {
@@ -36,7 +38,7 @@ fn run() -> CniResult<()> {
     .expect("CNI network configuration directory is set");
 
   let _ = load_config(PathBuf::from(net_dir), args.index(2))
-    .map_err(|e| exit(Some(e)))
+    .map_err(|_| exit(Some(CniErrorCode::DecodeContentFailure)))
     .expect("Failed to load config file");
 
   let if_name = std::env::var(CNI_IFNAME)
@@ -44,13 +46,12 @@ fn run() -> CniResult<()> {
     .or_else(|| Some("eth0".to_string()))
     .expect("CNI_IFNAME env var is not set");
 
-  let net_ns = args.index(3);
-  if !PathBuf::from(net_ns).is_absolute() {
-    exit(Some(CniError::new(
-      CniErrorCode::IOFailure.into(),
-      Cow::from("netns must be absolute"),
-      None::<&str>,
-    )))
+  let netns = args.index(3);
+  if !PathBuf::from(netns).is_absolute() {
+    exit(Some(CniErrorCode::IOFailure(std::io::Error::new(
+      std::io::ErrorKind::InvalidFilename,
+      "No network configuration path must be absolute",
+    ))))
   }
 
   let cni_args = std::env::var(CNI_ARGS)
@@ -59,8 +60,8 @@ fn run() -> CniResult<()> {
     .expect("CNI arguments is empty");
 
   let rt = RuntimeConfig {
-    container_id: obtain_hashed_container_id(net_ns.clone()),
-    net_ns: net_ns.clone(),
+    container_id: obtain_hashed_container_id(netns.clone()),
+    netns: netns.clone(),
     if_name,
     args: cni_args,
   };
@@ -71,10 +72,7 @@ fn run() -> CniResult<()> {
     "check" => exit(None),
     "gc" => exit(None),
     "status" => exit(None),
-    _ => exit(Some(CniError::simple(
-      CniErrorCode::InvalidNetworkConfig.into(),
-      "Unknown command",
-    ))),
+    _ => exit(Some(CniErrorCode::UnknownCommand)),
   }
 }
 
@@ -89,9 +87,9 @@ cnitool: Add, check, or remove network interfaces from a network namespace
   std::process::exit(1);
 }
 
-fn exit(error: Option<CniError>) -> ! {
+fn exit(error: Option<CniErrorCode>) -> ! {
   if let Some(e) = error {
-    eprintln!("{}", e);
+    eprintln!("{:?}", e);
     std::process::exit(1);
   } else {
     std::process::exit(0);

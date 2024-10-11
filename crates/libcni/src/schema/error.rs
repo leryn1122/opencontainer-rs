@@ -1,4 +1,6 @@
 use std::borrow::Cow;
+use std::env::VarError;
+use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Formatter;
 
@@ -8,7 +10,7 @@ use support::semver::deserialize_version;
 use support::semver::serialize_version;
 
 ///
-pub type CniResult<T, E = CniError> = Result<T, E>;
+pub type CniResult<T, E = CniErrorCode> = Result<T, E>;
 
 /// # CNI Error
 /// [Error](https://github.com/containernetworking/cni/blob/main/SPEC.md#error)
@@ -31,17 +33,8 @@ pub struct CniError {
 }
 
 impl CniError {
-  pub fn new(code: usize, message: impl Into<String>, details: Option<impl Into<String>>) -> Self {
-    Self {
-      cni_version: semver::Version::new(1, 1, 0),
-      code,
-      message: Cow::from(message.into()),
-      details: details.map(|s| Cow::from(s.into())),
-    }
-  }
-
-  pub fn simple(code: usize, message: impl Into<String>) -> Self {
-    Self::new(code, message.into(), None::<&str>)
+  pub fn code(&self) -> usize {
+    self.code
   }
 }
 
@@ -55,6 +48,7 @@ impl std::error::Error for CniError {}
 
 /// # CNI Error Code
 /// [Error Code](https://github.com/containernetworking/cni/blob/main/SPEC.md#well-known-error-codes)
+#[derive(Debug)]
 pub enum CniErrorCode {
   /// Incompatible CNI version
   IncompatibleVersion(semver::Version),
@@ -69,10 +63,10 @@ pub enum CniErrorCode {
   /// The error message must contain the names of invalid variables.
   InvalidEnvironmentVariable {
     var:   &'static str,
-    error: Box<dyn std::error::Error>,
+    error: Box<dyn std::error::Error + 'static>,
   },
   /// I/O failure. For example, failed to read network config bytes from stdin.
-  IOFailure,
+  IOFailure(std::io::Error),
   /// Failed to decode content. For example, failed to unmarshal network config from bytes or
   /// failed to decode version info from string.
   DecodeContentFailure,
@@ -82,19 +76,51 @@ pub enum CniErrorCode {
   /// Try again later. If the plugin detects some transient condition that should clear up,
   /// it can use this code to notify the runtime it should re-try the operation later.
   TryAgainLater,
+
+  // Predefined by this library
+  MissingEnvironmentVariable {
+    var:   &'static str,
+    error: VarError,
+  },
+  MissingInput,
+  UnknownCommand,
+  //
+  Other {
+    code:    usize,
+    message: &'static str,
+    details: &'static str,
+  },
 }
 
-impl Into<usize> for CniErrorCode {
-  fn into(self) -> usize {
+impl CniErrorCode {
+  pub fn code(&self) -> usize {
     match self {
       CniErrorCode::IncompatibleVersion(_) => 1,
       CniErrorCode::UnsupportedField => 2,
       CniErrorCode::UnknownContainer => 3,
       CniErrorCode::InvalidEnvironmentVariable { .. } => 4,
-      CniErrorCode::IOFailure => 5,
+      CniErrorCode::IOFailure(_) => 5,
       CniErrorCode::DecodeContentFailure => 6,
       CniErrorCode::InvalidNetworkConfig => 7,
       CniErrorCode::TryAgainLater => 11,
+      CniErrorCode::MissingEnvironmentVariable { .. } => 12,
+      CniErrorCode::MissingInput => 13,
+      CniErrorCode::UnknownCommand => 14,
+      CniErrorCode::Other { code, .. } => code.clone(),
     }
+  }
+}
+
+pub struct UnknownCommandError;
+
+impl Debug for UnknownCommandError {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    f.write_str("UnknownCommandError")
+  }
+}
+
+impl Display for UnknownCommandError {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    f.write_str("Unknown command error")
   }
 }
