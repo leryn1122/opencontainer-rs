@@ -1,4 +1,7 @@
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+  // println!("cargo:rerun-if-changed=resources/proto/v1.proto");
+  // println!("cargo:rerun-if-changed=resources/proto/v1alpha2.proto");
+
   let mut config = prost_build::Config::new();
   config.btree_map(&["."]);
 
