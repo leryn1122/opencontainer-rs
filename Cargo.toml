@@ -5,7 +5,9 @@ members = [
   "crates/libcri",
   "crates/libcsi",
   "crates/liboci",
-  "crates/support"
+  "crates/support",
+
+  "examples/local-dir-csi",
 ]
 
 [workspace.dependencies]

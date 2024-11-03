@@ -1,0 +1,112 @@
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+  name: csi-local-dir-csidriver-sa
+  labels:
+    "app.kubernetes.io/name": local-dir-csidriver-plugin
+    "app.kubernetes.io/instance": io.github.leryn.csi.local-dir-csidriver
+    "app.kubernetes.io/part-of": local-dir-csidriver
+    "app.kubernetes.io/component": serviceaccount
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: csi-local-dir-csidriver-attacher-clusterrole
+  labels:
+    "app.kubernetes.io/name": local-dir-csidriver-plugin
+    "app.kubernetes.io/instance": io.github.leryn.csi.local-dir-csidriver
+    "app.kubernetes.io/part-of": local-dir-csidriver
+    "app.kubernetes.io/component": attacher-cluster-role
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: external-attacher-runner
+subjects:
+  - kind: ServiceAccount
+    name: csi-local-dir-csidriver-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: csi-local-dir-csidriver-health-monitor-controller-cluster-role
+  labels:
+    "app.kubernetes.io/name": local-dir-csidriver-plugin
+    "app.kubernetes.io/instance": io.github.leryn.csi.local-dir-csidriver
+    "app.kubernetes.io/part-of": local-dir-csidriver
+    "app.kubernetes.io/component": health-monitor-controller-clusterrole
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: external-health-monitor-controller-runner
+subjects:
+  - kind: ServiceAccount
+    name: csi-local-dir-csidriver-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: csi-local-dir-csidriver-provisioner-clusterrole
+  labels:
+    "app.kubernetes.io/name": local-dir-csidriver-plugin
+    "app.kubernetes.io/instance": io.github.leryn.csi.local-dir-csidriver
+    "app.kubernetes.io/part-of": local-dir-csidriver
+    "app.kubernetes.io/component": provisioner-clusterrole
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: external-provisioner-runner
+subjects:
+  - kind: ServiceAccount
+    name: csi-local-dir-csidriver-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: csi-local-dir-csidriver-attacher-role
+  labels:
+    "app.kubernetes.io/name": local-dir-csidriver-plugin
+    "app.kubernetes.io/instance": io.github.leryn.csi.local-dir-csidriver
+    "app.kubernetes.io/part-of": local-dir-csidriver
+    "app.kubernetes.io/component": attacher-role
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: external-attacher-cfg
+subjects:
+  - kind: ServiceAccount
+    name: csi-local-dir-csidriver-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: csi-local-dir-csidriver-health-monitor-controller-role
+  labels:
+    "app.kubernetes.io/name": local-dir-csidriver-plugin
+    "app.kubernetes.io/instance": io.github.leryn.csi.local-dir-csidriver
+    "app.kubernetes.io/part-of": local-dir-csidriver
+    "app.kubernetes.io/component": health-monitor-controller-role
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: external-health-monitor-controller-cfg
+subjects:
+  - kind: ServiceAccount
+    name: csi-local-dir-csidriver-sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  labels:
+    "app.kubernetes.io/name": local-dir-csidriver-plugin
+    "app.kubernetes.io/instance": io.github.leryn.csi.local-dir-csidriver
+    "app.kubernetes.io/part-of": local-dir-csidriver
+    "app.kubernetes.io/component": provisioner-role
+  name: csi-local-dir-csidriver-provisioner-role
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: external-provisioner-cfg
+subjects:
+  - kind: ServiceAccount
+    name: csi-local-dir-csidriver-sa

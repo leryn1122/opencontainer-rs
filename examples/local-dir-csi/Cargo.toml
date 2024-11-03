@@ -1,0 +1,46 @@
+[package]
+name = "local-dir-csi"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dependencies.async-trait]
+version = "0.1.83"
+
+[dependencies.clap]
+version = "4.5.18"
+
+[dependencies.clap_derive]
+version = "4.5.18"
+
+[dependencies.libcsi]
+workspace = true
+# git = "https://github.com/leryn1122/opencontainer-rs/crates/libcsi"
+
+[dependencies.log]
+version = "0.4.22"
+
+[dependencies.opentelemetry]
+version = "0.26.0"
+features = ["logs"]
+
+[dependencies.opentelemetry-appender-log]
+version = "0.26.0"
+
+[dependencies.opentelemetry_sdk]
+version = "0.26.0"
+features = ["tokio", "rt-tokio"]
+
+[dependencies.opentelemetry-stdout]
+version = "0.26.0"
+
+[dependencies.tokio]
+version = "1.40.0"
+features = ["rt", "rt-multi-thread", "macros"]
+
+[dependencies.tonic]
+version = "0.12.3"
+
+[dependencies.tower]
+version = "0.4.13"
